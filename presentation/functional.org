@@ -80,8 +80,8 @@ const add3 = add(3)
 #+END_SRC
 * Pattern Match
 
-Se implementássemos uma função $sum$ em Javascript ela
-seria muito parecida com isso:
+Se implementássemos uma função $sum$ recursiva
+em Javascript ela seria muito parecida com isso:
 
 #+BEGIN_SRC javascript
 function sum(xs) {
@@ -96,7 +96,7 @@ function sum(xs) {
 
 * Pattern Match
 
-O mesmo exemplo em elm ficaria assim:
+O mesmo exemplo em elm:
 
 #+BEGIN_SRC elm
 sum : List Int -> Int
@@ -149,7 +149,7 @@ isOdd = isEven >> not
 
 * Pipes
 
-Para previnir a utilização de pipes e evitar que tudo
+Para previnir a utilização de parênteses e evitar que tudo
 lembre /lisp/. Elm tem os operadores de pipe.
 
 #+BEGIN_SRC elm
@@ -225,7 +225,7 @@ valendoUmMilhaoDeReais oNumeroMaisBonitoDoMundo =
 ** Reduce
 
 #+BEGIN_EXAMPLE elm
->>> List.foldl (+) [1, 2, 3]
+>>> List.foldl (+) 0 [1, 2, 3]
 6
 >>> List.foldr (::) [] [1, 2, 3]
 [3, 2, 1]
@@ -246,3 +246,5 @@ valendoUmMilhaoDeReais oNumeroMaisBonitoDoMundo =
 >>> List.filter isEven [1, 2, 3]
 [2]
 #+END_EXAMPLE
+
+* Isso é tudo pessoal

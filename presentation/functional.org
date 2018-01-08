@@ -1,0 +1,248 @@
+* Workshop de elm
+
+
+#+CAPTION: The elm logo
+#+ATTR_ORG: :width 500
+                    [[./logo.png]]
+
+              *Programação functional com ELM*
+* O Que é elm?
+** Elm é uma liguagem de programação puramente funcional.
+*** Tem bastante inspiração em Haskell
+*** E é uma liguagem de domínio
+*** É /strict/
+*** Não existe /null/
+*** Sem *RuntimeErrors*
+
+* Hello, elm!
+
+#+NAME: hello.elm
+#+BEGIN_SRC elm
+main : Html msg
+main = 
+  text "Hello, elm!"
+#+END_SRC
+
+* Currying
+
+Somando dois números em *C*
+#+BEGIN_SRC c
+int add(int a, int b) {
+  return a + b
+}
+#+END_SRC
+
+Somando dois números em *ELM*
+#+BEGIN_SRC elm
+add : Int -> Int -> Int
+add a b = a + b
+#+END_SRC
+
+* Currying
+
+A notação $add: Int_a\to Int_b\to Int$ quer dizer que
+ao aplicarmos o valor $a$ a função $add$ ela nos
+retornará uma nova função $add_a: Int_b\to Int$.
+
+* Currying
+
+[[./nazare.jpg]]
+
+Acho que chega de matemática
+
+* Currying
+
+Como isso pode ser útil?
+
+#+BEGIN_SRC elm :results values
+add3 : Int -> Int
+add3 = add 3
+#+END_SRC
+
+#+BEGIN_EXAMPLE elm
+>>> add3 3
+6
+>>> add3 1
+3
+#+END_EXAMPLE
+
+* Currying
+** Versão da função add em Javascript
+
+#+BEGIN_SRC javascript
+function add(a) {
+  return function(b) {
+    return a + b
+  }
+}
+
+const add3 = add(3)
+#+END_SRC
+* Pattern Match
+
+Se implementássemos uma função $sum$ em Javascript ela
+seria muito parecida com isso:
+
+#+BEGIN_SRC javascript
+function sum(xs) {
+  if (xs == []) {
+    return 0
+  }
+
+  const x = xs[0]
+  return x + sum(xs.slice(1))
+}
+#+END_SRC
+
+* Pattern Match
+
+O mesmo exemplo em elm ficaria assim:
+
+#+BEGIN_SRC elm
+sum : List Int -> Int
+sum list =
+  case list of
+    [] -> 0
+    x::xs -> x + sum xs
+#+END_SRC
+
+* Tail Recursion Optimization 
+
+#+BEGIN_SRC elm
+sumHelper : Int -> List Int -> Int
+sumHelper acc list = 
+  case list of
+    [] -> acc
+    x::xs -> sumHelper (acc + x) xs
+
+sum : List Int -> Int
+sum = sumHelper 0
+#+END_SRC
+
+Essa versão da $sum$ não gera /stack/.
+
+* Composição de funções
+
+Dado a função $isEven(x) = x \% 2 == 0$ e a
+função $not(x) = \neg x$ podemos definir a função
+$isOdd$ como $isOdd : not \circ isEven$.
+
+Lembrando que $y = f(g(x))$ é o mesmo que $f \circ g$
+
+* Composição de funções
+
+Vamos passar isso para Elm.
+
+#+BEGIN_SRC elm
+isEven : Int -> Bool
+isEven x = x % 2 == 0
+
+isOdd : Int -> Bool
+isOdd = not << isEven
+
+-- Ou ainda
+
+isOdd : Int -> Bool
+isOdd = isEven >> not
+#+END_SRC
+
+
+* Pipes
+
+Para previnir a utilização de pipes e evitar que tudo
+lembre /lisp/. Elm tem os operadores de pipe.
+
+#+BEGIN_SRC elm
+  reverseAndUpper : String -> String
+  reverseAndUpper text =
+    String.toUpper (String.reverse text)
+#+END_SRC
+
+* Pipes
+
+Uma versão mais legível (na minha na minha opinião):
+
+#+BEGIN_SRC elm
+  reverseAndUpper : String -> String
+  reverseAndUpper text =
+    text
+      |> String.reverse
+      |> String.toUpper
+#+END_SRC
+
+* Pipes
+
+Assim como em composições de funções, há a forma contrária:
+
+#+BEGIN_SRC elm
+  reverseAndUpper : String -> String
+  reverseAndUpper text =
+    String.toUpper <|
+      String.reverse <|
+        text
+#+END_SRC
+
+* Union types
+
+Também conhecidos como /Algebraic Data Type/ (ADT) é um tipo
+de dado com vários construtores. Por exemplo:
+
+#+BEGIN_SRC elm
+type DomingoElaNaoVai = VaiVai | NaoVaiVaiVai
+--   ^     tipo     ^   ^   construtores    ^
+
+vai : DomingoElaNaoVai -> Bool
+vai ela =
+  case ela of
+    VaiVai -> True
+    NaoVaiVaiVai -> False
+#+END_SRC
+
+* Type variables
+
+Type variables é uma forma de se fazer /polimorfismo/,
+ou seja, fazer com que algo trabalhe com multiplas
+tipos de dados.
+
+Lembra que eu falei que elm não tem /null/? Vamos
+ver como definir valores opcionais em elm.
+
+* Type variables
+
+#+BEGIN_SRC elm
+type Maybe a = Just a | Nothing
+
+valendoUmMilhaoDeReais : Maybe Int -> Bool
+valendoUmMilhaoDeReais oNumeroMaisBonitoDoMundo =
+  case oNumeroMaisBonitoDoMundo of
+    Nothing ->
+      False
+    Just numero -> 
+      numero == 42
+#+END_SRC
+
+* Um pouco mais sobre Elm
+** Reduce
+
+#+BEGIN_EXAMPLE elm
+>>> List.foldl (+) [1, 2, 3]
+6
+>>> List.foldr (::) [] [1, 2, 3]
+[3, 2, 1]
+#+END_EXAMPLE
+
+* Um pouco mais sobre Elm
+** Map
+
+#+BEGIN_EXAMPLE elm
+>>> List.map not [True, False, True]
+[False, True, False]
+#+END_EXAMPLE
+
+* Um pouco mais sobre Elm
+** Filter
+
+#+BEGIN_EXAMPLE elm
+>>> List.filter isEven [1, 2, 3]
+[2]
+#+END_EXAMPLE
